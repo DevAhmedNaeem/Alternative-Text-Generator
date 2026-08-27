@@ -5,6 +5,10 @@
       "destination": "https://openrouter.ai/$1"
     },
     {
+      "source": "/api/agentrouter/(.*)",
+      "destination": "/api/agentrouter-proxy?path=$1"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
