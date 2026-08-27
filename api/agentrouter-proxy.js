@@ -12,7 +12,9 @@ export const config = { api: { bodyParser: false } };
 
 export default async function handler(req, res) {
   const targetPath = req.query.path || '';
-  const targetUrl = `https://agentrouter.org/${targetPath}`;
+  const targetUrl = targetPath === '__debug_echo__'
+    ? 'https://httpbin.org/anything'
+    : `https://agentrouter.org/${targetPath}`;
 
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
