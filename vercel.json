@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/openrouter/(.*)",
+      "destination": "https://openrouter.ai/$1"
+    },
+    {
+      "source": "/api/agentrouter/(.*)",
+      "destination": "https://agentrouter.org/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
