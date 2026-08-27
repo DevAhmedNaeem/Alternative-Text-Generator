@@ -1,20 +1,18 @@
 // Proxies agentrouter.org requests via a vercel.json rewrite:
 // /api/agentrouter/(.*) -> /api/agentrouter-proxy?path=$1
 //
-// agentrouter.org blocks requests without this User-Agent (it returns an
-// HTML challenge page instead of JSON), so a plain external URL rewrite
-// can't reach it from production - only a function that sets the header can.
-// Runs on the Edge runtime rather than Node serverless, since the Node
-// serverless egress IP (AWS datacenter range) was being WAF-blocked by
-// agentrouter.org regardless of headers.
+// agentrouter.org requires a specific User-Agent header, which only a
+// function (not a plain external URL rewrite) can set. Note: agentrouter.org
+// also WAF-blocks requests from cloud/datacenter IP ranges (confirmed for
+// both Vercel's Node serverless and Edge runtime egress IPs) independent of
+// headers, so calls through this proxy may still fail in production even
+// with the header set correctly - that block is on agentrouter.org's side.
 export const config = { runtime: 'edge' };
 
 export default async function handler(req) {
   const url = new URL(req.url);
   const targetPath = url.searchParams.get('path') || '';
-  const targetUrl = targetPath === '__debug_echo__'
-    ? 'https://httpbin.org/anything'
-    : `https://agentrouter.org/${targetPath}`;
+  const targetUrl = `https://agentrouter.org/${targetPath}`;
 
   try {
     const upstream = await fetch(targetUrl, {
